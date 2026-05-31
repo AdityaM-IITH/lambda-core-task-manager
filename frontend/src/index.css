@@ -49,3 +49,31 @@ input, select {
   color: var(--text-color);
   border: 1px solid var(--border-color);
 }
+
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  th {
+    padding: 5px !important;
+  }
+  tr {
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: var(--secondary-bg);
+  }
+  td {
+    border: none;
+    position: relative;
+    padding: 8px 0 !important;
+    text-align: left !important;
+  }
+}
