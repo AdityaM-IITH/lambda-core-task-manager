@@ -1,9 +1,4 @@
-# Lambda Core Task Manager 🚀
-
-![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)
-![Python](https://img.shields.io/badge/Python-3.11+-blue.svg?style=for-the-badge&logo=python&logoColor=white)
-![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?style=for-the-badge&logo=fastapi&logoColor=white)
+# Lambda Core Task Manager
 
 **Live URL:** [https://lambda-core-task-manager.vercel.app/](https://lambda-core-task-manager.vercel.app/)
 
