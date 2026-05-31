@@ -543,9 +543,9 @@ export default function App() {
           color: red !important;
         }
       `}</style>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
         <h1 style={{ margin: 0 }}>Todo List</h1>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
           <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', marginRight: '10px', fontSize: '14px' }}>
             <span style={{ marginRight: '5px' }}>{isDarkMode ? '🌙' : '☀️'}</span>
             <input 
