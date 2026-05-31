@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 import bcrypt
 
 #config
-SECRET_KEY = "super-secret-key-for-lambda-core" 
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "local-dev-fallback-key-do-not-use-in-prod")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
