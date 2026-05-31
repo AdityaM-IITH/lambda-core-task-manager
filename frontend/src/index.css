@@ -1,0 +1,51 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --secondary-bg: #f0f0f0;
+  --tertiary-bg: #f5f5f5;
+  --border-color: #cccccc;
+  --border-light: #dddddd;
+  --desc-text: gray;
+  --red-text: #d32f2f;
+  --green-text: #008000;
+  --btn-green: #008000;
+  --btn-cyan: #17a2b8;
+  --btn-gray: #555555;
+  --input-bg: #ffffff;
+  --link-color: blue;
+}
+
+[data-theme='dark'] {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --secondary-bg: #1e1e1e;
+  --tertiary-bg: #2d2d2d;
+  --border-color: #444444;
+  --border-light: #333333;
+  --desc-text: #aaaaaa;
+  --red-text: #ff6b6b;
+  --green-text: #4ade80;
+  --btn-green: #22c55e;
+  --btn-cyan: #06b6d4;
+  --btn-gray: #374151;
+  --input-bg: #1e1e1e;
+  --link-color: #60a5fa;
+}
+
+[data-theme='dark'] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+  margin: 0;
+  padding: 0;
+}
+
+input, select {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
