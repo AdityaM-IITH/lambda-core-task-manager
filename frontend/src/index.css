@@ -55,25 +55,20 @@ input, select {
     display: block;
   }
   thead {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-  }
-  th {
-    padding: 5px !important;
+    display: none;
   }
   tr {
     border: 1px solid var(--border-color);
     margin-bottom: 15px;
     border-radius: 8px;
-    padding: 10px;
+    padding: 15px;
     background-color: var(--secondary-bg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   td {
     border: none;
     position: relative;
-    padding: 8px 0 !important;
+    padding: 5px 0 !important;
     text-align: left !important;
   }
 }
