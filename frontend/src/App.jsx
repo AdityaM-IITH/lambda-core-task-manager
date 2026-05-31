@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API_URL = "http://localhost:8000";
+const API_URL = "https://lambda-core-task-manager.onrender.com";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
