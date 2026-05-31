@@ -4,7 +4,7 @@
 
 A full-stack, production-ready task management application built as a monolithic repository. Features a blazing-fast Python FastAPI backend and a responsive React frontend.
 
-## ✨ Features
+## Features
 
 - **JWT Authentication:** Secure user registration, login, and protected routes using stateless JWT tokens.
 - **Data Isolation:** Each user has an isolated database view; you can only see and edit your own tasks.
@@ -14,7 +14,7 @@ A full-stack, production-ready task management application built as a monolithic
 - **Mobile Responsive UI:** Custom CSS `@media` queries instantly transform horizontal desktop tables into vertical mobile cards.
 - **CSV Data Export:** Generate and download a CSV file of all tasks instantly on the client side.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend:**
 - React (Vite)
@@ -28,8 +28,8 @@ A full-stack, production-ready task management application built as a monolithic
 - SQLite (Database)
 - PassLib & Bcrypt (Password Hashing)
 - Render.com (Deployment)
-
-## 🚀 Local Development Setup
+  
+##  Local Development Setup
 
 Clone the repository to your local machine:
 ```bash
