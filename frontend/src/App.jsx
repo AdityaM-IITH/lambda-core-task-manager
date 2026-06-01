@@ -1049,12 +1049,20 @@ export default function App() {
                 </div>
               </label>
 
-              <button 
-                onClick={() => { downloadCSV(); setShowSettingsModal(false); }} 
-                style={{ padding: '12px', backgroundColor: 'var(--btn-cyan)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', textAlign: 'center' }}
-              >
-                ⬇️ Export Tasks to CSV
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--tertiary-bg)', padding: '15px', borderRadius: '6px', opacity: tasks.length === 0 ? 0.6 : 1 }}>
+                <div>
+                  <div style={{ fontWeight: 'bold', color: 'var(--text-color)', marginBottom: '4px', fontSize: '15px' }}>Export</div>
+                  <div style={{ color: 'var(--desc-text)', fontSize: '13px' }}>Download tasks as CSV</div>
+                </div>
+                <button 
+                  onClick={() => { downloadCSV(); setShowSettingsModal(false); }} 
+                  disabled={tasks.length === 0}
+                  className="export-btn"
+                  title="Export to CSV"
+                >
+                  ⬇️
+                </button>
+              </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--tertiary-bg)', padding: '15px', borderRadius: '6px' }}>
                 <div>
