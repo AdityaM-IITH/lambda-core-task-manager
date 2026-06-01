@@ -34,6 +34,7 @@ export default function App() {
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [calendarTaskPopup, setCalendarTaskPopup] = useState(null);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const renderLoadingOverlay = (message = "Processing...") => (
     <div style={{
@@ -669,20 +670,8 @@ export default function App() {
         </button>
 
         <div className="sidebar-utils" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <label className="sidebar-nav-btn" style={{ cursor: 'pointer', margin: 0, justifyContent: 'center' }}>
-            <span>{isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
-            <input 
-              type="checkbox" 
-              checked={isDarkMode} 
-              onChange={() => setIsDarkMode(!isDarkMode)} 
-              style={{ display: 'none' }}
-            />
-          </label>
-          <button onClick={downloadCSV} className="sidebar-nav-btn" style={{ justifyContent: 'center', backgroundColor: 'var(--btn-cyan)', color: 'white' }}>
-            ⬇️ Export CSV
-          </button>
-          <button onClick={handleLogout} className="sidebar-nav-btn" style={{ justifyContent: 'center', backgroundColor: 'var(--btn-gray)', color: 'white' }}>
-            Logout
+          <button onClick={() => setShowSettingsModal(true)} className="sidebar-nav-btn" style={{ justifyContent: 'center', backgroundColor: 'var(--btn-gray)', color: 'white' }}>
+            ⚙️ Settings
           </button>
         </div>
       </div>
@@ -995,6 +984,51 @@ export default function App() {
               <span style={{ color: calendarTaskPopup.is_completed ? 'var(--green-text)' : 'var(--text-color)', fontSize: '14px', fontWeight: 'bold' }}>
                 {calendarTaskPopup.is_completed ? "✓ Completed" : "Pending"}
               </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSettingsModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.6)', zIndex: 10000,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+          backdropFilter: 'blur(3px)'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--bg-color)', padding: '30px', borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.5)', textAlign: 'left', maxWidth: '350px', width: '90%'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+              <h2 style={{ margin: 0, color: 'var(--text-color)' }}>Settings</h2>
+              <button onClick={() => setShowSettingsModal(false)} style={{ background: 'none', border: 'none', fontSize: '20px', color: 'var(--text-color)', cursor: 'pointer' }}>✕</button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: 'var(--tertiary-bg)', borderRadius: '6px', cursor: 'pointer' }}>
+                <span style={{ color: 'var(--text-color)', fontWeight: 'bold' }}>{isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
+                <input 
+                  type="checkbox" 
+                  checked={isDarkMode} 
+                  onChange={() => setIsDarkMode(!isDarkMode)} 
+                  style={{ transform: 'scale(1.2)' }}
+                />
+              </label>
+
+              <button 
+                onClick={() => { downloadCSV(); setShowSettingsModal(false); }} 
+                style={{ padding: '12px', backgroundColor: 'var(--btn-cyan)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', textAlign: 'center' }}
+              >
+                ⬇️ Export Tasks to CSV
+              </button>
+
+              <button 
+                onClick={handleLogout} 
+                style={{ padding: '12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', textAlign: 'center' }}
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
