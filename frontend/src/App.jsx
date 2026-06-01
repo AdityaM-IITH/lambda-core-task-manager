@@ -31,23 +31,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [isLoginView, setIsLoginView] = useState(true);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-  const [stats, setStats] = useState(null);
-
-  const fetchStats = async () => {
-    if (!token) return;
-    try {
-      const res = await fetch(`${API_URL}/todos/stats`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (res.ok) setStats(await res.json());
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  useEffect(() => {
-    fetchStats();
-  }, [token, tasks]);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   const renderLoadingOverlay = (message = "Processing...") => (
     <div style={{
@@ -623,6 +607,23 @@ export default function App() {
     }
     return activeView;
   };
+  const getStats = () => {
+    const todayStr = new Date().toISOString().split("T")[0];
+    return tasks.reduce((acc, t) => {
+      acc.total += 1;
+      if (t.is_completed) {
+        acc.completed += 1;
+        if (t.deadline && t.deadline < todayStr) acc.late += 1;
+        else acc.on_time += 1;
+      } else {
+        acc.pending += 1;
+        if (t.deadline && t.deadline < todayStr) acc.overdue += 1;
+      }
+      return acc;
+    }, { total: 0, completed: 0, on_time: 0, late: 0, pending: 0, overdue: 0 });
+  };
+
+  const stats = tasks.length > 0 ? getStats() : null;
 
   return (
     <div className="app-container" style={{ fontFamily: 'sans-serif' }}>
