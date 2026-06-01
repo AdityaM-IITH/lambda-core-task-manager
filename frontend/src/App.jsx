@@ -618,7 +618,7 @@ export default function App() {
           📈 Analytics
         </button>
 
-        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div className="sidebar-utils" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <label className="sidebar-nav-btn" style={{ cursor: 'pointer', margin: 0, justifyContent: 'center' }}>
             <span>{isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
             <input 

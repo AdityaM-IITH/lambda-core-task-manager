@@ -127,18 +127,31 @@ button:active:not(:disabled) {
     height: auto;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
-    padding: 15px;
+    padding: 10px 15px;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 10px;
+  }
+  .sidebar h2 {
+    margin: 0 0 10px 0 !important;
+    width: 100%;
+    text-align: center;
+  }
+  .sidebar-utils {
+    flex-direction: row !important;
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px !important;
   }
   .sidebar-nav-btn {
     margin-bottom: 0;
     padding: 8px 12px;
+    font-size: 14px;
   }
   .main-content {
-    padding: 20px;
+    padding: 15px;
   }
   
   table, thead, tbody, th, td, tr {
