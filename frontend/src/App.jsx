@@ -154,6 +154,14 @@ export default function App() {
     setToken(null);
     setTasks([]);
     localStorage.removeItem("token");
+    setIsLoginView(true);
+    setActiveView("Dashboard");
+    setShowSettingsModal(false);
+    setInputValue("");
+    setDescValue("");
+    setDeadlineValue("");
+    setCategoryValue("General");
+    setIsHighPriority(false);
   };
 
   //add task
@@ -330,37 +338,42 @@ export default function App() {
   //render auth screen
   if (!token) {
     return (
-      <div style={{ textAlign: 'center', maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif' }}>
-        <h1>{isLoginView ? "Login" : "Register"}</h1>
-        {successMsg && <h3 style={{ color: 'var(--green-text)' }}>{successMsg}</h3>}
-        {error && <p style={{ color: 'var(--red-text)' }}>{error}</p>}
-        <form onSubmit={handleAuth}>
-          <div style={{ marginBottom: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-color)', fontFamily: 'sans-serif', padding: '20px', boxSizing: 'border-box' }}>
+        <div style={{ width: '100%', maxWidth: '400px', padding: '40px', backgroundColor: 'var(--secondary-bg)', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.12)', textAlign: 'center' }}>
+          <h1 style={{ margin: '0 0 20px 0', color: 'var(--text-color)', fontSize: '32px' }}>LambdaCore</h1>
+          <h2 style={{ margin: '0 0 25px 0', color: 'var(--desc-text)', fontSize: '16px', fontWeight: 'normal' }}>{isLoginView ? "Log in to your account" : "Create an account"}</h2>
+          
+          {successMsg && <div style={{ backgroundColor: 'rgba(74, 222, 128, 0.1)', color: 'var(--green-text)', padding: '12px', borderRadius: '8px', marginBottom: '20px', fontSize: '14px', border: '1px solid rgba(74, 222, 128, 0.2)' }}>{successMsg}</div>}
+          {error && <div style={{ backgroundColor: 'rgba(255, 107, 107, 0.1)', color: 'var(--red-text)', padding: '12px', borderRadius: '8px', marginBottom: '20px', fontSize: '14px', border: '1px solid rgba(255, 107, 107, 0.2)' }}>{error}</div>}
+          
+          <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <input 
               type="text" 
               placeholder="Username"
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
-              style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
+              style={{ padding: '14px 15px', width: '100%', boxSizing: 'border-box', fontSize: '15px', borderRadius: '8px' }}
             />
-          </div>
-          <div style={{ marginBottom: '10px' }}>
             <input 
               type="password" 
               placeholder="Password"
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
-              style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
+              style={{ padding: '14px 15px', width: '100%', boxSizing: 'border-box', fontSize: '15px', borderRadius: '8px' }}
             />
-          </div>
-          <button type="submit" disabled={isAuthLoading} style={{ padding: '8px', width: '100%', backgroundColor: isAuthLoading ? 'var(--btn-gray)' : 'var(--btn-green)', color: 'white', border: 'none', cursor: isAuthLoading ? 'not-allowed' : 'pointer', opacity: isAuthLoading ? 0.7 : 1 }}>
-            {isAuthLoading ? "Processing..." : (isLoginView ? "Login" : "Register")}
+            <button type="submit" disabled={isAuthLoading} style={{ padding: '14px', width: '100%', backgroundColor: isAuthLoading ? 'var(--btn-gray)' : 'var(--link-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: isAuthLoading ? 'not-allowed' : 'pointer', fontSize: '16px', fontWeight: 'bold', marginTop: '10px' }}>
+              {isAuthLoading ? "Authenticating..." : (isLoginView ? "Sign In" : "Sign Up")}
+            </button>
+          </form>
+          
+          <button onClick={() => { setIsLoginView(!isLoginView); setError(null); setSuccessMsg(null); }} style={{ marginTop: '25px', background: 'none', border: 'none', color: 'var(--desc-text)', cursor: 'pointer', fontSize: '14px' }}>
+            {isLoginView ? "Don't have an account? " : "Already have an account? "}
+            <span style={{ color: 'var(--link-color)', textDecoration: 'underline' }}>
+              {isLoginView ? "Sign up" : "Log in"}
+            </span>
           </button>
-        </form>
-        <button onClick={() => { setIsLoginView(!isLoginView); setError(null); setSuccessMsg(null); }} style={{ marginTop: '15px', background: 'none', border: 'none', color: 'var(--link-color)', textDecoration: 'underline', cursor: 'pointer' }}>
-          {isLoginView ? "Switch to Register" : "Switch to Login"}
-        </button>
-        {isAuthLoading && renderLoadingOverlay("Authenticating...")}
+        </div>
+        {isAuthLoading && renderLoadingOverlay("Connecting to server...")}
       </div>
     );
   }
