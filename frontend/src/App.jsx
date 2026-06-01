@@ -33,6 +33,7 @@ export default function App() {
   const [isLoginView, setIsLoginView] = useState(true);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [calendarTaskPopup, setCalendarTaskPopup] = useState(null);
 
   const renderLoadingOverlay = (message = "Processing...") => (
     <div style={{
@@ -911,7 +912,7 @@ export default function App() {
                           color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           textDecoration: t.is_completed ? 'line-through' : 'none',
                           cursor: 'pointer'
-                        }} title={t.todo_name}>
+                        }} title={t.todo_name} onClick={() => setCalendarTaskPopup(t)}>
                           {t.todo_name}
                         </div>
                       ))}
@@ -956,6 +957,44 @@ export default function App() {
               >
                 Delete
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {calendarTaskPopup && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.6)', zIndex: 10000,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+          backdropFilter: 'blur(3px)'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--bg-color)', padding: '30px', borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.5)', textAlign: 'left', maxWidth: '400px', width: '90%'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+              <h2 style={{ margin: 0, color: 'var(--text-color)' }}>{calendarTaskPopup.todo_name}</h2>
+              <button onClick={() => setCalendarTaskPopup(null)} style={{ background: 'none', border: 'none', fontSize: '20px', color: 'var(--text-color)', cursor: 'pointer' }}>✕</button>
+            </div>
+            
+            {calendarTaskPopup.priority === 1 && (
+              <span style={{ backgroundColor: 'var(--red-text)', color: 'white', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', display: 'inline-block', marginBottom: '15px' }}>
+                High Priority
+              </span>
+            )}
+            
+            <p style={{ color: 'var(--desc-text)', fontSize: '16px', lineHeight: '1.5', marginBottom: '20px' }}>
+              {calendarTaskPopup.todo_desc || "No description provided."}
+            </p>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '15px' }}>
+              <span style={{ color: 'var(--text-color)', fontSize: '14px' }}>
+                <strong>Category:</strong> {calendarTaskPopup.category || "General"}
+              </span>
+              <span style={{ color: calendarTaskPopup.is_completed ? 'var(--green-text)' : 'var(--text-color)', fontSize: '14px', fontWeight: 'bold' }}>
+                {calendarTaskPopup.is_completed ? "✓ Completed" : "Pending"}
+              </span>
             </div>
           </div>
         </div>
