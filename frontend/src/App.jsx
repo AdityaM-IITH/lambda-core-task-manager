@@ -199,6 +199,17 @@ export default function App() {
       category: categoryValue || "General"
     };
 
+    // Optimistic UI Update
+    const tempId = Date.now();
+    const optimisticTask = { ...newTask, todo_id: tempId };
+    setTasks(prev => [...prev, optimisticTask]);
+    
+    setInputValue("");
+    setDescValue("");
+    setDeadlineValue("");
+    setCategoryValue("General");
+    setIsHighPriority(false);
+
     fetch(`${API_URL}/todos`, {
       method: "POST",
       headers: { 
@@ -219,18 +230,21 @@ export default function App() {
         return res.json();
     })
     .then(savedTask => {
-      setTasks(prev => [...prev, savedTask]);
-      setInputValue("");
-      setDescValue("");
-      setDeadlineValue("");
-      setCategoryValue("General");
-      setIsHighPriority(false);
+      // Swap temp ID with real ID
+      setTasks(prev => prev.map(t => t.todo_id === tempId ? savedTask : t));
     })
-    .catch(err => setError(err.message));
+    .catch(err => {
+      setError(err.message);
+      // Revert optimistic add
+      setTasks(prev => prev.filter(t => t.todo_id !== tempId));
+    });
   }
 
   //toggle
   function toggleTask(task) {
+    // Optimistic update
+    setTasks(prev => prev.map(t => t.todo_id === task.todo_id ? { ...t, is_completed: !t.is_completed } : t));
+
     const updatedTask = {
       is_completed: !task.is_completed
     };
@@ -243,9 +257,14 @@ export default function App() {
       },
       body: JSON.stringify(updatedTask)
     })
-    .then(res => res.json())
-    .then(savedTask => {
-      setTasks(prev => prev.map(t => t.todo_id === task.todo_id ? savedTask : t));
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to toggle task");
+      return res.json();
+    })
+    .catch(err => {
+      setError(err.message);
+      // Revert optimistic toggle
+      setTasks(prev => prev.map(t => t.todo_id === task.todo_id ? { ...t, is_completed: task.is_completed } : t));
     });
   }
 
@@ -271,6 +290,11 @@ export default function App() {
       priority: editFormData.priority
     };
 
+    // Optimistic update
+    const previousTaskState = { ...task };
+    setTasks(prev => prev.map(t => t.todo_id === task.todo_id ? { ...t, ...updatedTask } : t));
+    setEditingTaskId(null);
+
     fetch(`${API_URL}/todos/${task.todo_id}`, {
       method: "PUT",
       headers: { 
@@ -279,23 +303,40 @@ export default function App() {
       },
       body: JSON.stringify(updatedTask)
     })
-    .then(res => res.json())
-    .then(savedTask => {
-      setTasks(prev => prev.map(t => t.todo_id === task.todo_id ? savedTask : t));
-      setEditingTaskId(null);
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to update task");
+      return res.json();
+    })
+    .catch(err => {
+      setError(err.message);
+      // Revert optimistic edit
+      setTasks(prev => prev.map(t => t.todo_id === task.todo_id ? previousTaskState : t));
     });
   };
 
   //delete
   function deleteTask(id) {
+    // Find task before deleting to enable revert
+    const taskToDelete = tasks.find(t => t.todo_id === id);
+    
+    // Optimistic delete
+    setTasks(prev => prev.filter(t => t.todo_id !== id));
+
     fetch(`${API_URL}/todos/${id}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${token}`
       }
     })
-    .then(() => {
-      setTasks(prev => prev.filter(t => t.todo_id !== id));
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to delete task");
+    })
+    .catch(err => {
+      setError(err.message);
+      // Revert optimistic delete
+      if (taskToDelete) {
+        setTasks(prev => [...prev, taskToDelete]);
+      }
     });
   }
 
