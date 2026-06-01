@@ -150,6 +150,16 @@ export default function App() {
     }
   };
 
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+
+  const handleSignOutClick = () => {
+    if (inputValue.trim() || descValue.trim()) {
+      setShowSignOutConfirm(true);
+    } else {
+      handleLogout();
+    }
+  };
+
   const handleLogout = () => {
     setToken(null);
     setTasks([]);
@@ -1050,12 +1060,37 @@ export default function App() {
                 ⬇️ Export Tasks to CSV
               </button>
 
-              <button 
-                onClick={handleLogout} 
-                style={{ padding: '12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', textAlign: 'center' }}
-              >
-                Logout
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--tertiary-bg)', padding: '15px', borderRadius: '6px' }}>
+                <div>
+                  <div style={{ fontWeight: 'bold', color: 'var(--text-color)', marginBottom: '4px', fontSize: '15px' }}>Email</div>
+                  <div style={{ color: 'var(--desc-text)', fontSize: '13px' }}>{
+                    (() => {
+                      if (!token) return "Unknown";
+                      try { return JSON.parse(atob(token.split('.')[1])).sub; }
+                      catch(e) { return "Unknown"; }
+                    })()
+                  }</div>
+                </div>
+                <button 
+                  onClick={handleSignOutClick} 
+                  style={{ padding: '8px 15px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSignOutConfirm && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 10001, display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(3px)' }}>
+          <div style={{ backgroundColor: 'var(--bg-color)', padding: '30px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', textAlign: 'center', maxWidth: '350px' }}>
+            <h3 style={{ margin: '0 0 15px 0', color: 'var(--red-text)' }}>⚠️ Unsaved Work</h3>
+            <p style={{ color: 'var(--text-color)', marginBottom: '20px', lineHeight: '1.5' }}>You have a draft task written that hasn't been added yet. Are you sure you want to sign out and lose it?</p>
+            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+              <button onClick={() => setShowSignOutConfirm(false)} style={{ padding: '10px 20px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
+              <button onClick={() => { setShowSignOutConfirm(false); handleLogout(); }} style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Sign Out Anyway</button>
             </div>
           </div>
         </div>
