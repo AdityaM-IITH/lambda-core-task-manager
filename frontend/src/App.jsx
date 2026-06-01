@@ -27,6 +27,24 @@ export default function App() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginView, setIsLoginView] = useState(true);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
+
+  const renderLoadingOverlay = (message = "Processing...") => (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)', zIndex: 9999,
+      display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+      color: '#fff', backdropFilter: 'blur(3px)'
+    }}>
+      <div style={{
+        width: '50px', height: '50px', border: '5px solid rgba(255,255,255,0.2)',
+        borderRadius: '50%', borderTopColor: '#fff', animation: 'spin 1s ease-in-out infinite',
+        marginBottom: '15px'
+      }} />
+      <h2 style={{ margin: 0, letterSpacing: '1px' }}>{message}</h2>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
   //dm state
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -74,8 +92,10 @@ export default function App() {
   //auth logic
   const handleAuth = async (e) => {
     e.preventDefault();
+    if (isAuthLoading) return;
     setError(null);
     setSuccessMsg(null);
+    setIsAuthLoading(true);
     try {
       if (isLoginView) {
         //login uses form data
@@ -118,6 +138,8 @@ export default function App() {
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsAuthLoading(false);
     }
   };
 
@@ -283,13 +305,14 @@ export default function App() {
               style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
             />
           </div>
-          <button type="submit" style={{ padding: '8px', width: '100%', backgroundColor: 'var(--btn-green)', color: 'white', border: 'none', cursor: 'pointer' }}>
-            {isLoginView ? "Login" : "Register"}
+          <button type="submit" disabled={isAuthLoading} style={{ padding: '8px', width: '100%', backgroundColor: isAuthLoading ? 'var(--btn-gray)' : 'var(--btn-green)', color: 'white', border: 'none', cursor: isAuthLoading ? 'not-allowed' : 'pointer', opacity: isAuthLoading ? 0.7 : 1 }}>
+            {isAuthLoading ? "Processing..." : (isLoginView ? "Login" : "Register")}
           </button>
         </form>
         <button onClick={() => { setIsLoginView(!isLoginView); setError(null); setSuccessMsg(null); }} style={{ marginTop: '15px', background: 'none', border: 'none', color: 'var(--link-color)', textDecoration: 'underline', cursor: 'pointer' }}>
           {isLoginView ? "Switch to Register" : "Switch to Login"}
         </button>
+        {isAuthLoading && renderLoadingOverlay("Authenticating...")}
       </div>
     );
   }
@@ -519,6 +542,7 @@ export default function App() {
 
   return (
     <div style={{ maxWidth: '800px', margin: '50px auto', fontFamily: 'sans-serif' }}>
+      {loading && renderLoadingOverlay("Loading your tasks...")}
       <style>{`
         .task-row .action-btn {
           opacity: 0;
