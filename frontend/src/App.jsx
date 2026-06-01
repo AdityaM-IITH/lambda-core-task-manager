@@ -21,6 +21,14 @@ export default function App() {
   const [hideCompleted, setHideCompleted] = useState(false);
   const [hpSortDir, setHpSortDir] = useState('none'); 
   const [normalSortDir, setNormalSortDir] = useState('none');
+
+  
+  //auth states
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoginView, setIsLoginView] = useState(true);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [stats, setStats] = useState(null);
 
   const fetchStats = async () => {
@@ -38,13 +46,6 @@ export default function App() {
   useEffect(() => {
     fetchStats();
   }, [token, tasks]);
-  
-  //auth states
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoginView, setIsLoginView] = useState(true);
-  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   const renderLoadingOverlay = (message = "Processing...") => (
     <div style={{
