@@ -23,6 +23,7 @@ export default function App() {
   const [hpSortDir, setHpSortDir] = useState('none'); 
   const [normalSortDir, setNormalSortDir] = useState('none');
   const [activeView, setActiveView] = useState("Dashboard");
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   
   //auth states
@@ -659,6 +660,12 @@ export default function App() {
         >
           📈 Analytics
         </button>
+        <button 
+          className={`sidebar-nav-btn ${activeView === 'Calendar' ? 'active' : ''}`}
+          onClick={() => setActiveView('Calendar')}
+        >
+          📅 Calendar
+        </button>
 
         <div className="sidebar-utils" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <label className="sidebar-nav-btn" style={{ cursor: 'pointer', margin: 0, justifyContent: 'center' }}>
@@ -865,6 +872,54 @@ export default function App() {
             ) : (
               <p>Loading analytics...</p>
             )}
+          </div>
+        )}
+
+        {activeView === 'Calendar' && (
+          <div style={{ padding: '20px', backgroundColor: 'var(--secondary-bg)', borderRadius: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} style={{ padding: '8px 15px', backgroundColor: 'var(--tertiary-bg)', color: 'var(--text-color)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>◀ Prev</button>
+              <h2 style={{ margin: 0 }}>{["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
+              <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} style={{ padding: '8px 15px', backgroundColor: 'var(--tertiary-bg)', color: 'var(--text-color)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Next ▶</button>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '10px' }}>
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+                <div key={d} style={{ fontWeight: 'bold', textAlign: 'center', padding: '10px 0', borderBottom: '2px solid var(--border-color)' }}>{d}</div>
+              ))}
+              {Array.from({ length: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay() }).map((_, i) => (
+                <div key={`empty-${i}`} style={{ minHeight: '100px', backgroundColor: 'var(--bg-color)', borderRadius: '4px', opacity: 0.3 }} />
+              ))}
+              {Array.from({ length: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate() }).map((_, i) => {
+                const d = i + 1;
+                const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayTasks = tasks.filter(t => t.deadline === dateStr);
+                const isToday = new Date().toISOString().split('T')[0] === dateStr;
+                
+                return (
+                  <div key={d} style={{ 
+                    minHeight: '100px', backgroundColor: 'var(--bg-color)', borderRadius: '4px', padding: '5px',
+                    border: isToday ? '2px solid var(--green-text)' : '1px solid var(--border-color)',
+                    display: 'flex', flexDirection: 'column'
+                  }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '5px', color: isToday ? 'var(--green-text)' : 'var(--text-color)', fontSize: '14px', textAlign: 'right' }}>{d}</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', overflowY: 'auto', maxHeight: '120px' }}>
+                      {dayTasks.map(t => (
+                        <div key={t.todo_id} style={{ 
+                          fontSize: '11px', padding: '3px 5px', borderRadius: '3px', 
+                          backgroundColor: t.is_completed ? 'var(--btn-gray)' : (t.priority === 1 ? '#dc3545' : 'var(--btn-green)'),
+                          color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          textDecoration: t.is_completed ? 'line-through' : 'none',
+                          cursor: 'pointer'
+                        }} title={t.todo_name}>
+                          {t.todo_name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
