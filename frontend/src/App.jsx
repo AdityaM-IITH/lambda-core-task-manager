@@ -1025,12 +1025,15 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: 'var(--tertiary-bg)', borderRadius: '6px', cursor: 'pointer' }}>
                 <span style={{ color: 'var(--text-color)', fontWeight: 'bold' }}>{isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
-                <input 
-                  type="checkbox" 
-                  checked={isDarkMode} 
-                  onChange={() => setIsDarkMode(!isDarkMode)} 
-                  style={{ transform: 'scale(1.2)' }}
-                />
+                <div className="theme-switch-wrapper">
+                  <input 
+                    type="checkbox" 
+                    checked={isDarkMode} 
+                    onChange={() => setIsDarkMode(!isDarkMode)} 
+                    className="theme-switch-checkbox"
+                  />
+                  <div className="theme-switch-slider"></div>
+                </div>
               </label>
 
               <button 
