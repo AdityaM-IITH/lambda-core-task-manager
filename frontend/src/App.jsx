@@ -876,8 +876,15 @@ export default function App() {
                 </div>
 
               </div>
+            ) : tasks.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--desc-text)', backgroundColor: 'var(--secondary-bg)', borderRadius: '8px' }}>
+                <h2 style={{ marginBottom: '10px', fontSize: '24px' }}>📊 No Data Yet</h2>
+                <p style={{ fontSize: '16px' }}>Add some tasks to see your analytics and progress!</p>
+              </div>
             ) : (
-              <p>Loading analytics...</p>
+              <div style={{ textAlign: 'center', padding: '50px 20px', color: 'var(--desc-text)' }}>
+                <p>Loading analytics...</p>
+              </div>
             )}
           </div>
         )}
