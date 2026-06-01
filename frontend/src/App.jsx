@@ -153,11 +153,7 @@ export default function App() {
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
   const handleSignOutClick = () => {
-    if (inputValue.trim() || descValue.trim()) {
-      setShowSignOutConfirm(true);
-    } else {
-      handleLogout();
-    }
+    setShowSignOutConfirm(true);
   };
 
   const handleLogout = () => {
@@ -1086,11 +1082,20 @@ export default function App() {
       {showSignOutConfirm && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 10001, display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(3px)' }}>
           <div style={{ backgroundColor: 'var(--bg-color)', padding: '30px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', textAlign: 'center', maxWidth: '350px' }}>
-            <h3 style={{ margin: '0 0 15px 0', color: 'var(--red-text)' }}>⚠️ Unsaved Work</h3>
-            <p style={{ color: 'var(--text-color)', marginBottom: '20px', lineHeight: '1.5' }}>You have a draft task written that hasn't been added yet. Are you sure you want to sign out and lose it?</p>
+            {(inputValue.trim() || descValue.trim()) ? (
+              <>
+                <h3 style={{ margin: '0 0 15px 0', color: 'var(--red-text)' }}>⚠️ Unsaved Work</h3>
+                <p style={{ color: 'var(--text-color)', marginBottom: '20px', lineHeight: '1.5' }}>You have a draft task written that hasn't been added yet. Are you sure you want to sign out and lose it?</p>
+              </>
+            ) : (
+              <>
+                <h3 style={{ margin: '0 0 15px 0', color: 'var(--text-color)' }}>Sign Out</h3>
+                <p style={{ color: 'var(--desc-text)', marginBottom: '20px', lineHeight: '1.5' }}>Are you sure you want to sign out of your account?</p>
+              </>
+            )}
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
               <button onClick={() => setShowSignOutConfirm(false)} style={{ padding: '10px 20px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
-              <button onClick={() => { setShowSignOutConfirm(false); handleLogout(); }} style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Sign Out Anyway</button>
+              <button onClick={() => { setShowSignOutConfirm(false); handleLogout(); }} style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>{(inputValue.trim() || descValue.trim()) ? "Sign Out Anyway" : "Sign Out"}</button>
             </div>
           </div>
         </div>
