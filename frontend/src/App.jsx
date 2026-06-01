@@ -704,9 +704,9 @@ export default function App() {
               </div>
             )}
             
-            {upcomingTasks.length > 0 && (
-              <>
-                <h2 style={{ color: 'var(--text-color)', marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>Upcoming Deadlines</h2>
+            <>
+              <h2 style={{ color: 'var(--text-color)', marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>Upcoming Deadlines</h2>
+              {upcomingTasks.length > 0 ? (
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '15px', textAlign: 'left', marginBottom: '30px' }}>
                   <thead>
                     <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
@@ -720,8 +720,12 @@ export default function App() {
                     {upcomingTasks.map(renderTask)}
                   </tbody>
                 </table>
-              </>
-            )}
+              ) : (
+                <div style={{ padding: '30px', textAlign: 'center', backgroundColor: 'var(--tertiary-bg)', borderRadius: '8px', marginTop: '15px', marginBottom: '30px' }}>
+                  <p style={{ color: 'var(--desc-text)', fontSize: '16px', margin: 0 }}>No upcoming deadlines!</p>
+                </div>
+              )}
+            </>
 
 
           </div>
