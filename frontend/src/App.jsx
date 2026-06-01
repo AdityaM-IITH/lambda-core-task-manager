@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const API_URL = "https://lambda-core-task-manager.onrender.com";
 
@@ -774,6 +775,48 @@ export default function App() {
                     <h3 style={{ margin: '0 0 10px 0', color: 'var(--desc-text)' }}>Overdue</h3>
                     <div style={{ fontSize: '36px', fontWeight: 'bold', color: 'var(--red-text)' }}>{stats.overdue}</div>
                   </div>
+                </div>
+
+                <div style={{ padding: '20px', backgroundColor: 'var(--secondary-bg)', borderRadius: '8px', height: '400px' }}>
+                  <h3 style={{ margin: '0 0 20px 0', color: 'var(--desc-text)' }}>Task Distribution</h3>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Completed (On-Time)', value: stats.on_time },
+                          { name: 'Completed (Late)', value: stats.late },
+                          { name: 'Pending', value: stats.pending },
+                          { name: 'Overdue', value: stats.overdue },
+                        ].filter(d => d.value > 0)}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={80}
+                        outerRadius={120}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {[
+                          { name: 'Completed (On-Time)', value: stats.on_time },
+                          { name: 'Completed (Late)', value: stats.late },
+                          { name: 'Pending', value: stats.pending },
+                          { name: 'Overdue', value: stats.overdue },
+                        ].filter(d => d.value > 0).map((entry, index) => {
+                          const COLORS = {
+                            'Completed (On-Time)': 'var(--green-text)',
+                            'Completed (Late)': '#d39e00',
+                            'Pending': 'var(--link-color)',
+                            'Overdue': 'var(--red-text)'
+                          };
+                          return <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />;
+                        })}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: 'var(--tertiary-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-color)' }}
+                        itemStyle={{ color: 'var(--text-color)' }}
+                      />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
 
                 {stats.completed > 0 && (
