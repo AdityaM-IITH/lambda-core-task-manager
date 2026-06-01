@@ -213,3 +213,21 @@ button:active:not(:disabled) {
 .theme-switch-checkbox:checked + .theme-switch-slider:before {
   transform: translateX(24px);
 }
+
+/* Sign Out Button Hover Effect */
+.signout-btn {
+  padding: 8px 15px;
+  background-color: var(--btn-gray);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.signout-btn:hover {
+  transform: translateY(-3px);
+  background-color: #dc3545;
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+}

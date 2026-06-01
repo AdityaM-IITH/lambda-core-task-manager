@@ -1062,7 +1062,7 @@ export default function App() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--tertiary-bg)', padding: '15px', borderRadius: '6px' }}>
                 <div>
-                  <div style={{ fontWeight: 'bold', color: 'var(--text-color)', marginBottom: '4px', fontSize: '15px' }}>Email</div>
+                  <div style={{ fontWeight: 'bold', color: 'var(--text-color)', marginBottom: '4px', fontSize: '15px' }}>Username</div>
                   <div style={{ color: 'var(--desc-text)', fontSize: '13px' }}>{
                     (() => {
                       if (!token) return "Unknown";
@@ -1073,7 +1073,7 @@ export default function App() {
                 </div>
                 <button 
                   onClick={handleSignOutClick} 
-                  style={{ padding: '8px 15px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                  className="signout-btn"
                 >
                   Sign Out
                 </button>
