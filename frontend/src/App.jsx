@@ -867,9 +867,9 @@ export default function App() {
                       <h3 style={{ margin: '0 0 5px 0' }}>Data Management</h3>
                       <p style={{ margin: 0, color: 'var(--desc-text)', fontSize: '14px' }}>You have {stats.completed} completed tasks taking up space.</p>
                     </div>
-                    <button onClick={async () => {
-                      await fetch(`${API_URL}/todos/completed`, { method: 'DELETE', headers: { "Authorization": `Bearer ${token}` } });
-                      setTasks(prev => prev.filter(t => !t.is_completed));
+                    <button onClick={() => {
+                      const completedTasks = tasks.filter(t => t.is_completed);
+                      completedTasks.forEach(t => deleteTask(t.todo_id));
                     }} style={{ backgroundColor: '#dc3545', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                       Delete All Completed Tasks
                     </button>
