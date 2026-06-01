@@ -376,6 +376,7 @@ export default function App() {
 
   let highPriorityTasks = displayedTasks.filter(t => t.priority === 1);
   let normalTasks = displayedTasks.filter(t => t.priority !== 1);
+  const upcomingTasks = [...displayedTasks].filter(t => t.deadline && !t.is_completed).sort((a,b) => (getDaysLeft(a.deadline) ?? Infinity) - (getDaysLeft(b.deadline) ?? Infinity)).slice(0, 3);
 
   const sortListByDeadline = (list, dir) => {
     if (dir === 'none') return;
@@ -394,6 +395,7 @@ export default function App() {
 
   sortListByDeadline(highPriorityTasks, hpSortDir);
   sortListByDeadline(normalTasks, normalSortDir);
+  sortListByDeadline(displayedTasks, normalSortDir);
 
   const cycleSort = (currentDir, setDir) => {
     if (currentDir === 'none' || currentDir === 'desc') setDir('asc');
@@ -529,6 +531,11 @@ export default function App() {
           }}>
             {task.category || 'General'}
           </span>
+          {task.priority === 1 && (
+            <span style={{ backgroundColor: 'var(--red-text)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', display: 'inline-block', marginLeft: '5px' }}>
+              High Priority
+            </span>
+          )}
         </td>
         <td style={{ padding: '10px', color: 'var(--desc-text)', fontSize: '16px' }}>
           {task.todo_desc}
@@ -641,6 +648,25 @@ export default function App() {
               </div>
             )}
             
+            {upcomingTasks.length > 0 && (
+              <>
+                <h2 style={{ color: 'var(--text-color)', marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>Upcoming Deadlines</h2>
+                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '15px', textAlign: 'left', marginBottom: '30px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
+                      <th style={{ padding: '10px', width: '30%' }}>Name</th>
+                      <th style={{ padding: '10px', width: '35%' }}>Description</th>
+                      <th style={{ padding: '10px', width: '20%' }}>Deadline</th>
+                      <th style={{ padding: '10px', width: '15%', textAlign: 'right' }}>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {upcomingTasks.map(renderTask)}
+                  </tbody>
+                </table>
+              </>
+            )}
+
             <h2 style={{ color: 'var(--red-text)', marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>High Priority Tasks</h2>
             <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '15px', textAlign: 'left' }}>
               <thead>
@@ -703,7 +729,7 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {normalTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>You're all caught up! Add a new task above to get started.</td></tr> : normalTasks.map(renderTask)}
+                {displayedTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>You're all caught up! Add a new task above to get started.</td></tr> : displayedTasks.map(renderTask)}
               </tbody>
             </table>
           </div>
