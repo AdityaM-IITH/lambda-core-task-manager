@@ -1060,7 +1060,7 @@ export default function App() {
                   className="export-btn"
                   title="Export to CSV"
                 >
-                  ⬇️
+                  ↓
                 </button>
               </div>
 
