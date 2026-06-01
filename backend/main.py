@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -140,6 +141,55 @@ def delete_todo(todo_id: int, db: Session = Depends(get_db), current_user: model
     db.delete(db_todo)
     db.commit()
     return {"message": "Todo deleted successfully"}
+
+@app.get('/todos/stats')
+def get_todo_stats(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    todos = db.query(models.Todo).filter(models.Todo.owner_id == current_user.id).all()
+    
+    total = len(todos)
+    completed = 0
+    on_time = 0
+    late = 0
+    pending = 0
+    overdue = 0
+    
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    
+    for t in todos:
+        if t.is_completed:
+            completed += 1
+            if t.deadline and t.deadline < today_str:
+                late += 1
+            else:
+                on_time += 1
+        else:
+            pending += 1
+            if t.deadline and t.deadline < today_str:
+                overdue += 1
+                
+    return {
+        "total": total,
+        "completed": completed,
+        "on_time": on_time,
+        "late": late,
+        "pending": pending,
+        "overdue": overdue
+    }
+
+@app.delete('/todos/completed')
+def delete_completed_todos(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    completed_todos = db.query(models.Todo).filter(models.Todo.owner_id == current_user.id, models.Todo.is_completed == True).all()
+    count = 0
+    for t in completed_todos:
+        db.delete(t)
+        count += 1
+    db.commit()
+    return {"message": f"Deleted {count} completed tasks"}
+
+@app.get('/todos/categories')
+def get_categories(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    categories = db.query(models.Todo.category).filter(models.Todo.owner_id == current_user.id).distinct().all()
+    return [c[0] for c in categories if c[0]]
 
 #health check endpoint
 @app.get('/health')

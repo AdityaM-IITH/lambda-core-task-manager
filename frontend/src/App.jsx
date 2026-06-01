@@ -21,6 +21,23 @@ export default function App() {
   const [hideCompleted, setHideCompleted] = useState(false);
   const [hpSortDir, setHpSortDir] = useState('none'); 
   const [normalSortDir, setNormalSortDir] = useState('none');
+  const [stats, setStats] = useState(null);
+
+  const fetchStats = async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_URL}/todos/stats`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) setStats(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, [token, tasks]);
   
   //auth states
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -588,6 +605,29 @@ export default function App() {
         </div>
       </div>
       
+      {stats && (
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '25px', padding: '15px 0', borderBottom: '1px solid var(--border-color)', borderTop: '1px solid var(--border-color)', fontSize: '14px', color: 'var(--desc-text)', alignItems: 'center' }}>
+          <span style={{ fontWeight: 'bold', color: 'var(--text-color)', fontSize: '16px' }}>Analytics</span>
+          <span>Total: <strong>{stats.total}</strong></span>
+          <span style={{ color: 'var(--green-text)' }}>On-Time: <strong>{stats.on_time}</strong></span>
+          <span style={{ color: 'var(--red-text)' }}>Late: <strong>{stats.late}</strong></span>
+          <span>Pending: <strong>{stats.pending}</strong></span>
+          <span style={{ color: 'var(--red-text)' }}>Overdue: <strong>{stats.overdue}</strong></span>
+          
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <span style={{ color: 'var(--green-text)', fontWeight: 'bold' }}>✓ {stats.completed} Completed</span>
+            {stats.completed > 0 && (
+              <button onClick={async () => {
+                await fetch(`${API_URL}/todos/completed`, { method: 'DELETE', headers: { "Authorization": `Bearer ${token}` } });
+                setTasks(prev => prev.filter(t => !t.is_completed));
+              }} style={{ background: 'none', border: 'none', color: 'var(--red-text)', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>
+                Clear All
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {error && <p style={{ color: 'var(--red-text)', fontStyle: 'italic' }}>{error}</p>}
 
       <form onSubmit={addTask} style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
@@ -701,7 +741,7 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-            {highPriorityTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '10px', color: 'var(--desc-text)', textAlign: 'center' }}>No high priority tasks.</td></tr> : highPriorityTasks.map(renderTask)}
+            {highPriorityTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>No high priority tasks. Enjoy your peace of mind!</td></tr> : highPriorityTasks.map(renderTask)}
           </tbody>
         </table>
       </details>
@@ -726,7 +766,7 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-            {normalTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '10px', color: 'var(--desc-text)', textAlign: 'center' }}>No normal tasks.</td></tr> : normalTasks.map(renderTask)}
+            {normalTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>You're all caught up! Add a new task above to get started.</td></tr> : normalTasks.map(renderTask)}
           </tbody>
         </table>
       </details>
