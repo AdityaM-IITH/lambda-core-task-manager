@@ -566,6 +566,22 @@ export default function App() {
     );
   };
 
+  const getHeaderTitle = () => {
+    if (activeView === 'Dashboard') {
+      let uName = "USER";
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (payload.sub) {
+            uName = payload.sub.toUpperCase();
+          }
+        } catch(e) {}
+      }
+      return `Welcome ${uName}`;
+    }
+    return activeView;
+  };
+
   return (
     <div className="app-container" style={{ fontFamily: 'sans-serif' }}>
       {loading && renderLoadingOverlay("Loading your tasks...")}
@@ -622,7 +638,7 @@ export default function App() {
 
       {/* Main Content */}
       <div className="main-content">
-        <h1 style={{ margin: '0 0 20px 0', fontSize: '28px' }}>{activeView}</h1>
+        <h1 style={{ margin: '0 0 20px 0', fontSize: '28px' }}>{getHeaderTitle()}</h1>
         {error && <p style={{ color: 'var(--red-text)', fontStyle: 'italic', marginBottom: '15px' }}>{error}</p>}
 
         {activeView === 'Dashboard' && (
