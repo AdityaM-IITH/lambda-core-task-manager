@@ -667,25 +667,7 @@ export default function App() {
               </>
             )}
 
-            <h2 style={{ color: 'var(--red-text)', marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>High Priority Tasks</h2>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '15px', textAlign: 'left' }}>
-              <thead>
-                <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
-                  <th style={{ padding: '10px', width: '30%' }}>Name</th>
-                  <th style={{ padding: '10px', width: '35%' }}>Description</th>
-                  <th 
-                    style={{ padding: '10px', width: '20%', cursor: 'pointer', userSelect: 'none' }}
-                    onClick={() => cycleSort(hpSortDir, setHpSortDir)}
-                  >
-                    Deadline <span style={{ fontSize: '14px', marginLeft: '4px' }}>{getSortIcon(hpSortDir)}</span>
-                  </th>
-                  <th style={{ padding: '10px', width: '15%', textAlign: 'right' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {highPriorityTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>No high priority tasks. Enjoy your peace of mind!</td></tr> : highPriorityTasks.map(renderTask)}
-              </tbody>
-            </table>
+
           </div>
         )}
 
@@ -717,6 +699,29 @@ export default function App() {
               </div>
             </div>
 
+            <div style={{ marginBottom: '30px' }}>
+              <h2 style={{ color: 'var(--red-text)', marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>High Priority Tasks ({highPriorityTasks.length})</h2>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
+                    <th style={{ padding: '10px', width: '30%' }}>Name</th>
+                    <th style={{ padding: '10px', width: '35%' }}>Description</th>
+                    <th 
+                      style={{ padding: '10px', width: '20%', cursor: 'pointer', userSelect: 'none' }}
+                      onClick={() => cycleSort(hpSortDir, setHpSortDir)}
+                    >
+                      Deadline <span style={{ fontSize: '14px', marginLeft: '4px' }}>{getSortIcon(hpSortDir)}</span>
+                    </th>
+                    <th style={{ padding: '10px', width: '15%', textAlign: 'right' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {highPriorityTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>No high priority tasks. Enjoy your peace of mind!</td></tr> : highPriorityTasks.map(renderTask)}
+                </tbody>
+              </table>
+            </div>
+
+            <h2 style={{ marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>Normal Tasks ({normalTasks.length})</h2>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
@@ -729,7 +734,7 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {displayedTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>You're all caught up! Add a new task above to get started.</td></tr> : displayedTasks.map(renderTask)}
+                {normalTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>You're all caught up! Add a new task above to get started.</td></tr> : normalTasks.map(renderTask)}
               </tbody>
             </table>
           </div>
