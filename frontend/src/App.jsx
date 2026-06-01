@@ -21,6 +21,7 @@ export default function App() {
   const [hideCompleted, setHideCompleted] = useState(false);
   const [hpSortDir, setHpSortDir] = useState('none'); 
   const [normalSortDir, setNormalSortDir] = useState('none');
+  const [activeView, setActiveView] = useState("Dashboard");
 
   
   //auth states
@@ -559,37 +560,43 @@ export default function App() {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '50px auto', fontFamily: 'sans-serif' }}>
+    <div className="app-container" style={{ fontFamily: 'sans-serif' }}>
       {loading && renderLoadingOverlay("Loading your tasks...")}
       <style>{`
-        .task-row .action-btn {
-          opacity: 0;
-          transition: opacity 0.2s, filter 0.2s;
-          filter: grayscale(100%) opacity(50%);
-        }
-        .task-row:hover .action-btn {
-          opacity: 1;
-        }
-        .edit-mode-row .action-btn {
-          opacity: 1;
-        }
-        .task-row .edit-btn:hover {
-          filter: grayscale(0%) opacity(100%);
-        }
-        .task-row .save-btn:hover {
-          filter: grayscale(0%) opacity(100%);
-          color: green !important;
-        }
-        .task-row .delete-btn:hover {
-          filter: grayscale(0%) opacity(100%);
-          color: red !important;
-        }
+        .task-row .action-btn { opacity: 0; transition: opacity 0.2s, filter 0.2s; filter: grayscale(100%) opacity(50%); }
+        .task-row:hover .action-btn { opacity: 1; }
+        .edit-mode-row .action-btn { opacity: 1; }
+        .task-row .edit-btn:hover { filter: grayscale(0%) opacity(100%); }
+        .task-row .save-btn:hover { filter: grayscale(0%) opacity(100%); color: green !important; }
+        .task-row .delete-btn:hover { filter: grayscale(0%) opacity(100%); color: red !important; }
       `}</style>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
-        <h1 style={{ margin: 0 }}>Todo List</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', marginRight: '10px', fontSize: '14px' }}>
-            <span style={{ marginRight: '5px' }}>{isDarkMode ? '🌙' : '☀️'}</span>
+      
+      {/* Sidebar */}
+      <div className="sidebar">
+        <h2 style={{ margin: '0 0 30px 0', paddingLeft: '10px' }}>LambdaCore</h2>
+        
+        <button 
+          className={`sidebar-nav-btn ${activeView === 'Dashboard' ? 'active' : ''}`}
+          onClick={() => setActiveView('Dashboard')}
+        >
+          📊 Dashboard
+        </button>
+        <button 
+          className={`sidebar-nav-btn ${activeView === 'Tasks' ? 'active' : ''}`}
+          onClick={() => setActiveView('Tasks')}
+        >
+          ✅ Tasks
+        </button>
+        <button 
+          className={`sidebar-nav-btn ${activeView === 'Stats' ? 'active' : ''}`}
+          onClick={() => setActiveView('Stats')}
+        >
+          📈 Analytics
+        </button>
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <label className="sidebar-nav-btn" style={{ cursor: 'pointer', margin: 0, justifyContent: 'center' }}>
+            <span>{isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
             <input 
               type="checkbox" 
               checked={isDarkMode} 
@@ -597,180 +604,153 @@ export default function App() {
               style={{ display: 'none' }}
             />
           </label>
-          <button onClick={downloadCSV} title="Download CSV" style={{ padding: '5px 15px', backgroundColor: 'var(--btn-cyan)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-            ⬇️ CSV
+          <button onClick={downloadCSV} className="sidebar-nav-btn" style={{ justifyContent: 'center', backgroundColor: 'var(--btn-cyan)', color: 'white' }}>
+            ⬇️ Export CSV
           </button>
-          <button onClick={handleLogout} style={{ padding: '5px 15px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button onClick={handleLogout} className="sidebar-nav-btn" style={{ justifyContent: 'center', backgroundColor: 'var(--btn-gray)', color: 'white' }}>
             Logout
           </button>
         </div>
       </div>
-      
-      {stats && (
-        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '25px', padding: '15px 0', borderBottom: '1px solid var(--border-color)', borderTop: '1px solid var(--border-color)', fontSize: '14px', color: 'var(--desc-text)', alignItems: 'center' }}>
-          <span style={{ fontWeight: 'bold', color: 'var(--text-color)', fontSize: '16px' }}>Analytics</span>
-          <span>Total: <strong>{stats.total}</strong></span>
-          <span style={{ color: 'var(--green-text)' }}>On-Time: <strong>{stats.on_time}</strong></span>
-          <span style={{ color: 'var(--red-text)' }}>Late: <strong>{stats.late}</strong></span>
-          <span>Pending: <strong>{stats.pending}</strong></span>
-          <span style={{ color: 'var(--red-text)' }}>Overdue: <strong>{stats.overdue}</strong></span>
-          
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <span style={{ color: 'var(--green-text)', fontWeight: 'bold' }}>✓ {stats.completed} Completed</span>
-            {stats.completed > 0 && (
-              <button onClick={async () => {
-                await fetch(`${API_URL}/todos/completed`, { method: 'DELETE', headers: { "Authorization": `Bearer ${token}` } });
-                setTasks(prev => prev.filter(t => !t.is_completed));
-              }} style={{ background: 'none', border: 'none', color: 'var(--red-text)', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>
-                Clear All
-              </button>
+
+      {/* Main Content */}
+      <div className="main-content">
+        <h1 style={{ margin: '0 0 20px 0', fontSize: '28px' }}>{activeView}</h1>
+        {error && <p style={{ color: 'var(--red-text)', fontStyle: 'italic', marginBottom: '15px' }}>{error}</p>}
+
+        {activeView === 'Dashboard' && (
+          <div>
+            {stats && (
+              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '30px', padding: '20px', backgroundColor: 'var(--secondary-bg)', borderRadius: '8px', fontSize: '15px' }}>
+                <div style={{ flex: 1, minWidth: '120px' }}>
+                  <div style={{ color: 'var(--desc-text)', marginBottom: '5px' }}>Total Tasks</div>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.total}</div>
+                </div>
+                <div style={{ flex: 1, minWidth: '120px' }}>
+                  <div style={{ color: 'var(--green-text)', marginBottom: '5px' }}>On-Time</div>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.on_time}</div>
+                </div>
+                <div style={{ flex: 1, minWidth: '120px' }}>
+                  <div style={{ color: 'var(--red-text)', marginBottom: '5px' }}>Late</div>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.late}</div>
+                </div>
+                <div style={{ flex: 1, minWidth: '120px' }}>
+                  <div style={{ color: 'var(--desc-text)', marginBottom: '5px' }}>Pending</div>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.pending}</div>
+                </div>
+              </div>
+            )}
+            
+            <h2 style={{ color: 'var(--red-text)', marginTop: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>High Priority Tasks</h2>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '15px', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
+                  <th style={{ padding: '10px', width: '30%' }}>Name</th>
+                  <th style={{ padding: '10px', width: '35%' }}>Description</th>
+                  <th 
+                    style={{ padding: '10px', width: '20%', cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => cycleSort(hpSortDir, setHpSortDir)}
+                  >
+                    Deadline <span style={{ fontSize: '14px', marginLeft: '4px' }}>{getSortIcon(hpSortDir)}</span>
+                  </th>
+                  <th style={{ padding: '10px', width: '15%', textAlign: 'right' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {highPriorityTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>No high priority tasks. Enjoy your peace of mind!</td></tr> : highPriorityTasks.map(renderTask)}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeView === 'Tasks' && (
+          <div>
+            <form onSubmit={addTask} style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap', backgroundColor: 'var(--secondary-bg)', padding: '15px', borderRadius: '8px' }}>
+              <input type="text" placeholder="Todo name" value={inputValue} onChange={(e) => setInputValue(e.target.value)} style={{ flex: 2, padding: '10px', fontSize: '15px', minWidth: '150px' }} />
+              <input type="text" placeholder="Description" value={descValue} onChange={(e) => setDescValue(e.target.value)} style={{ flex: 2, padding: '10px', fontSize: '15px', minWidth: '150px' }} />
+              <input type="text" placeholder="Category / Tag" value={categoryValue} onChange={(e) => setCategoryValue(e.target.value)} style={{ flex: 1, padding: '10px', fontSize: '15px', minWidth: '100px' }} />
+              <input type="text" placeholder="Deadline" onFocus={(e) => (e.target.type = "date")} onBlur={(e) => (e.target.type = e.target.value ? "date" : "text")} value={deadlineValue} onChange={(e) => setDeadlineValue(e.target.value)} style={{ flex: 1, padding: '10px', fontSize: '15px', minWidth: '120px' }} />
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', padding: '0 10px' }}>
+                <input type="checkbox" checked={isHighPriority} onChange={(e) => setIsHighPriority(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
+                High Priority
+              </label>
+              <button type="submit" title="Add task" style={{ backgroundColor: 'var(--btn-green)', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer', fontWeight: 'bold', borderRadius: '6px' }}>Add</button>
+            </form>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', marginBottom: '15px', borderBottom: '1px solid var(--border-color)' }}>
+              <input type="text" placeholder="🔍 Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ padding: '8px', fontSize: '14px', minWidth: '200px' }} />
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ padding: '6px' }}>
+                  {[...new Set(["All", ...tasks.map(t => t.category || "General")])].map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+                <input type="date" value={dueBeforeFilter} onChange={(e) => setDueBeforeFilter(e.target.value)} style={{ padding: '6px' }} />
+                {dueBeforeFilter && <button onClick={() => setDueBeforeFilter("")} style={{ background: 'none', border: 'none', color: 'var(--red-text)', cursor: 'pointer' }}>✕</button>}
+                <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                  <input type="checkbox" checked={hideCompleted} onChange={(e) => setHideCompleted(e.target.checked)} style={{ marginRight: '8px' }} /> Hide Completed
+                </label>
+              </div>
+            </div>
+
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
+                  <th style={{ padding: '10px', width: '30%' }}>Name</th>
+                  <th style={{ padding: '10px', width: '35%' }}>Description</th>
+                  <th style={{ padding: '10px', width: '20%', cursor: 'pointer' }} onClick={() => cycleSort(normalSortDir, setNormalSortDir)}>
+                    Deadline <span style={{ fontSize: '14px' }}>{getSortIcon(normalSortDir)}</span>
+                  </th>
+                  <th style={{ padding: '10px', width: '15%', textAlign: 'right' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {normalTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>You're all caught up! Add a new task above to get started.</td></tr> : normalTasks.map(renderTask)}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeView === 'Stats' && (
+          <div>
+            {stats ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, padding: '20px', backgroundColor: 'var(--secondary-bg)', borderRadius: '8px', borderLeft: '4px solid var(--link-color)', minWidth: '200px' }}>
+                    <h3 style={{ margin: '0 0 10px 0', color: 'var(--desc-text)' }}>Total Pipeline</h3>
+                    <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{stats.total} <span style={{fontSize: '16px', fontWeight: 'normal'}}>tasks</span></div>
+                  </div>
+                  <div style={{ flex: 1, padding: '20px', backgroundColor: 'var(--secondary-bg)', borderRadius: '8px', borderLeft: '4px solid var(--green-text)', minWidth: '200px' }}>
+                    <h3 style={{ margin: '0 0 10px 0', color: 'var(--desc-text)' }}>Completed</h3>
+                    <div style={{ fontSize: '36px', fontWeight: 'bold', color: 'var(--green-text)' }}>{stats.completed}</div>
+                    <div style={{ fontSize: '14px', marginTop: '5px' }}>{stats.on_time} On-Time, {stats.late} Late</div>
+                  </div>
+                  <div style={{ flex: 1, padding: '20px', backgroundColor: 'var(--secondary-bg)', borderRadius: '8px', borderLeft: '4px solid var(--red-text)', minWidth: '200px' }}>
+                    <h3 style={{ margin: '0 0 10px 0', color: 'var(--desc-text)' }}>Overdue</h3>
+                    <div style={{ fontSize: '36px', fontWeight: 'bold', color: 'var(--red-text)' }}>{stats.overdue}</div>
+                  </div>
+                </div>
+
+                {stats.completed > 0 && (
+                  <div style={{ padding: '20px', backgroundColor: 'var(--tertiary-bg)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+                    <div>
+                      <h3 style={{ margin: '0 0 5px 0' }}>Data Management</h3>
+                      <p style={{ margin: 0, color: 'var(--desc-text)', fontSize: '14px' }}>You have {stats.completed} completed tasks taking up space.</p>
+                    </div>
+                    <button onClick={async () => {
+                      await fetch(`${API_URL}/todos/completed`, { method: 'DELETE', headers: { "Authorization": `Bearer ${token}` } });
+                      setTasks(prev => prev.filter(t => !t.is_completed));
+                    }} style={{ backgroundColor: '#dc3545', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                      Delete All Completed Tasks
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p>Loading analytics...</p>
             )}
           </div>
-        </div>
-      )}
+        )}
 
-      {error && <p style={{ color: 'var(--red-text)', fontStyle: 'italic' }}>{error}</p>}
-
-      <form onSubmit={addTask} style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
-        <input 
-          type="text"
-          placeholder="Todo name"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          style={{ flex: 2, padding: '10px', fontSize: '16px', minWidth: '150px' }}
-        />
-        <input 
-          type="text"
-          placeholder="Description"
-          value={descValue}
-          onChange={(e) => setDescValue(e.target.value)}
-          style={{ flex: 2, padding: '10px', fontSize: '16px', minWidth: '150px' }}
-        />
-        <input 
-          type="text"
-          placeholder="Category / Tag"
-          value={categoryValue}
-          onChange={(e) => setCategoryValue(e.target.value)}
-          style={{ flex: 1.5, padding: '10px', fontSize: '16px', minWidth: '130px' }}
-        />
-        <input 
-          type="text"
-          placeholder="Deadline"
-          onFocus={(e) => (e.target.type = "date")}
-          onBlur={(e) => (e.target.type = e.target.value ? "date" : "text")}
-          value={deadlineValue}
-          onChange={(e) => setDeadlineValue(e.target.value)}
-          style={{ flex: 1.5, padding: '10px', fontSize: '16px', minWidth: '130px' }}
-        />
-        <button type="submit" title="Add task" style={{ flex: 1, backgroundColor: 'var(--btn-green)', color: 'white', border: 'none', fontSize: '24px', cursor: 'pointer', minWidth: '80px', fontWeight: 'bold' }}>
-          +
-        </button>
-      </form>
-      
-      <div style={{ marginBottom: '30px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', width: 'fit-content' }}>
-          <input 
-            type="checkbox" 
-            checked={isHighPriority} 
-            onChange={(e) => setIsHighPriority(e.target.checked)} 
-            style={{ transform: 'scale(1.2)' }}
-          />
-          Mark as High Priority
-        </label>
       </div>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--secondary-bg)', padding: '10px 15px', borderRadius: '5px', marginBottom: '15px' }}>
-        <input 
-          type="text"
-          placeholder="🔍 Search name or description..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ padding: '8px', fontSize: '14px', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '200px', flex: 1 }}
-        />
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '14px', color: 'var(--desc-text)' }}>Category:</span>
-            <select 
-              value={categoryFilter} 
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              style={{ padding: '6px', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-            >
-              {[...new Set(["All", ...tasks.map(t => t.category || "General")])].map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '14px', color: 'var(--desc-text)' }}>Due before:</span>
-            <input 
-              type="date"
-              value={dueBeforeFilter}
-              onChange={(e) => setDueBeforeFilter(e.target.value)}
-              style={{ padding: '6px', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-            />
-            {dueBeforeFilter && <button onClick={() => setDueBeforeFilter("")} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--red-text)' }}>✕</button>}
-          </div>
-          <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-            <input 
-              type="checkbox" 
-              checked={hideCompleted}
-              onChange={(e) => setHideCompleted(e.target.checked)}
-              style={{ marginRight: '8px', cursor: 'pointer' }}
-            />
-            Hide Completed
-          </label>
-        </div>
-      </div>
-
-      <details open style={{ marginBottom: '20px' }}>
-        <summary style={{ fontSize: '20px', fontWeight: 'bold', cursor: 'pointer', color: 'var(--red-text)' }}>
-          High Priority Tasks ({highPriorityTasks.length})
-        </summary>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
-              <th style={{ padding: '10px', width: '30%' }}>Name</th>
-              <th style={{ padding: '10px', width: '35%' }}>Description</th>
-              <th 
-                style={{ padding: '10px', width: '20%', cursor: 'pointer', userSelect: 'none' }}
-                onClick={() => cycleSort(hpSortDir, setHpSortDir)}
-                title="Click to sort"
-              >
-                Deadline <span style={{ fontSize: '14px', marginLeft: '4px' }}>{getSortIcon(hpSortDir)}</span>
-              </th>
-              <th style={{ padding: '10px', width: '15%', textAlign: 'right' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {highPriorityTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>No high priority tasks. Enjoy your peace of mind!</td></tr> : highPriorityTasks.map(renderTask)}
-          </tbody>
-        </table>
-      </details>
-
-      <details open>
-        <summary style={{ fontSize: '20px', fontWeight: 'bold', cursor: 'pointer' }}>
-          Normal Tasks ({normalTasks.length})
-        </summary>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ backgroundColor: 'var(--tertiary-bg)', borderBottom: '2px solid var(--border-color)' }}>
-              <th style={{ padding: '10px', width: '30%' }}>Name</th>
-              <th style={{ padding: '10px', width: '35%' }}>Description</th>
-              <th 
-                style={{ padding: '10px', width: '20%', cursor: 'pointer', userSelect: 'none' }}
-                onClick={() => cycleSort(normalSortDir, setNormalSortDir)}
-                title="Click to sort"
-              >
-                Deadline <span style={{ fontSize: '14px', marginLeft: '4px' }}>{getSortIcon(normalSortDir)}</span>
-              </th>
-              <th style={{ padding: '10px', width: '15%', textAlign: 'right' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {normalTasks.length === 0 ? <tr><td colSpan="4" style={{ padding: '30px 10px', color: 'var(--desc-text)', textAlign: 'center', fontStyle: 'italic' }}>You're all caught up! Add a new task above to get started.</td></tr> : normalTasks.map(renderTask)}
-          </tbody>
-        </table>
-      </details>
     </div>
   );
 }
