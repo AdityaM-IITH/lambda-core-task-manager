@@ -31,7 +31,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [isLoginView, setIsLoginView] = useState(true);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
   const renderLoadingOverlay = (message = "Processing...") => (
     <div style={{
@@ -580,7 +580,7 @@ export default function App() {
             ✎
           </button>
           <button 
-            onClick={() => deleteTask(task.todo_id)}
+            onClick={() => setTaskToDelete(task)}
             title="Delete task"
             className="action-btn delete-btn"
             style={{ background: 'none', border: 'none', color: 'var(--text-color)', fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -861,20 +861,6 @@ export default function App() {
                   </ResponsiveContainer>
                 </div>
 
-                {stats.completed > 0 && (
-                  <div style={{ padding: '20px', backgroundColor: 'var(--tertiary-bg)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
-                    <div>
-                      <h3 style={{ margin: '0 0 5px 0' }}>Data Management</h3>
-                      <p style={{ margin: 0, color: 'var(--desc-text)', fontSize: '14px' }}>You have {stats.completed} completed tasks taking up space.</p>
-                    </div>
-                    <button onClick={() => {
-                      const completedTasks = tasks.filter(t => t.is_completed);
-                      completedTasks.forEach(t => deleteTask(t.todo_id));
-                    }} style={{ backgroundColor: '#dc3545', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                      Delete All Completed Tasks
-                    </button>
-                  </div>
-                )}
               </div>
             ) : (
               <p>Loading analytics...</p>
@@ -883,6 +869,42 @@ export default function App() {
         )}
 
       </div>
+      
+      {taskToDelete && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.6)', zIndex: 10000,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+          backdropFilter: 'blur(3px)'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--bg-color)', padding: '30px', borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.5)', textAlign: 'center', maxWidth: '400px', width: '90%'
+          }}>
+            <h2 style={{ marginTop: 0, color: '#dc3545' }}>Confirm Deletion</h2>
+            <p style={{ color: 'var(--text-color)', marginBottom: '25px', fontSize: '16px' }}>
+              Are you sure you want to delete "<strong>{taskToDelete.todo_name}</strong>"?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+              <button 
+                onClick={() => setTaskToDelete(null)}
+                style={{ padding: '10px 20px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  deleteTask(taskToDelete.todo_id);
+                  setTaskToDelete(null);
+                }}
+                style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
