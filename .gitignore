@@ -9,4 +9,4 @@ venv/
 .idea/
 .DS_Store
 *.log
-
+*.exe
