@@ -35,6 +35,7 @@ export default function App() {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [calendarTaskPopup, setCalendarTaskPopup] = useState(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [pastDeadlineAction, setPastDeadlineAction] = useState(null);
 
   const renderLoadingOverlay = (message = "Processing...") => (
     <div style={{
@@ -171,8 +172,8 @@ export default function App() {
   };
 
   //add task
-  function addTask(e) {
-    e.preventDefault();
+  function addTask(e, skipDateCheck = false) {
+    if (e && e.preventDefault) e.preventDefault();
     const trimmedName = inputValue.trim();
     const trimmedDesc = descValue.trim();
     
@@ -181,10 +182,10 @@ export default function App() {
         return;
     }
 
-    if (deadlineValue) {
+    if (deadlineValue && !skipDateCheck) {
         const todayStr = new Date().toISOString().split("T")[0];
         if (deadlineValue < todayStr) {
-            setError("Error: Deadline cannot be in the past.");
+            setPastDeadlineAction({ type: 'add' });
             return;
         }
     }
@@ -282,7 +283,15 @@ export default function App() {
   };
 
   //edit save
-  const saveEdit = (task) => {
+  const saveEdit = (task, skipDateCheck = false) => {
+    if (editFormData.deadline && !skipDateCheck) {
+        const todayStr = new Date().toISOString().split("T")[0];
+        if (editFormData.deadline < todayStr) {
+            setPastDeadlineAction({ type: 'edit', task });
+            return;
+        }
+    }
+
     const updatedTask = {
       todo_name: editFormData.todo_name.trim(),
       todo_desc: editFormData.todo_desc.trim(),
@@ -649,7 +658,6 @@ export default function App() {
 
   return (
     <div className="app-container" style={{ fontFamily: 'sans-serif' }}>
-      {loading && renderLoadingOverlay("Loading your tasks...")}
       <style>{`
         .task-row .action-btn { opacity: 0; transition: opacity 0.2s, filter 0.2s; filter: grayscale(100%) opacity(50%); }
         .task-row:hover .action-btn { opacity: 1; }
@@ -1104,6 +1112,24 @@ export default function App() {
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
               <button onClick={() => setShowSignOutConfirm(false)} style={{ padding: '10px 20px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
               <button onClick={() => { setShowSignOutConfirm(false); handleLogout(); }} style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>{(inputValue.trim() || descValue.trim()) ? "Sign Out Anyway" : "Sign Out"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {pastDeadlineAction && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 10002, display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(3px)' }}>
+          <div style={{ backgroundColor: 'var(--bg-color)', padding: '30px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', textAlign: 'center', maxWidth: '350px' }}>
+            <h3 style={{ margin: '0 0 15px 0', color: 'var(--text-color)' }}>Expired Task</h3>
+            <p style={{ color: 'var(--desc-text)', marginBottom: '20px', lineHeight: '1.5' }}>This deadline is already in the past. Are you sure you want to {pastDeadlineAction.type === 'add' ? 'add' : 'save'} an expired task?</p>
+            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+              <button onClick={() => setPastDeadlineAction(null)} style={{ padding: '10px 20px', backgroundColor: 'var(--btn-gray)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
+              <button onClick={() => { 
+                const action = pastDeadlineAction;
+                setPastDeadlineAction(null); 
+                if (action.type === 'add') addTask(null, true);
+                else saveEdit(action.task, true);
+              }} style={{ padding: '10px 20px', backgroundColor: 'var(--link-color)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Yes, proceed</button>
             </div>
           </div>
         </div>
