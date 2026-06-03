@@ -94,7 +94,10 @@ func main() {
 		}
 
 		user := models.User{Username: input.Username, HashedPassword: hashedPassword}
-		database.DB.Create(&user)
+		if err := database.DB.Create(&user).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"detail": "Failed to create user in database. Please restart server if tables were manually dropped."})
+			return
+		}
 
 		c.JSON(http.StatusOK, user)
 	})
