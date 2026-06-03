@@ -49,7 +49,7 @@ type AuthInput struct {
 type TodoInput struct {
 	TodoName    string `json:"todo_name"`
 	TodoDesc    string `json:"todo_desc"`
-	Priority    string `json:"priority"`
+	Priority    int    `json:"priority"`
 	IsCompleted *bool  `json:"is_completed"`
 	Deadline    string `json:"deadline"`
 	Category    string `json:"category"`
@@ -157,8 +157,8 @@ func main() {
 			if input.IsCompleted != nil {
 				todo.IsCompleted = *input.IsCompleted
 			}
-			if todo.Priority == "" {
-				todo.Priority = "Low"
+			if todo.Priority == 0 {
+				todo.Priority = 3 // default to normal priority
 			}
 			if todo.Category == "" {
 				todo.Category = "General"
@@ -190,7 +190,7 @@ func main() {
 			if input.TodoDesc != "" {
 				todo.TodoDesc = input.TodoDesc
 			}
-			if input.Priority != "" {
+			if input.Priority != 0 {
 				todo.Priority = input.Priority
 			}
 			if input.IsCompleted != nil {

@@ -12,7 +12,7 @@ type Todo struct {
 	TodoID      uint      `gorm:"primaryKey" json:"todo_id"`
 	TodoName    string    `gorm:"not null" json:"todo_name"`
 	TodoDesc    string    `json:"todo_desc"`
-	Priority    string    `json:"priority"`
+	Priority    int       `json:"priority"`
 	IsCompleted bool      `gorm:"default:false" json:"is_completed"`
 	Deadline    string    `json:"deadline"`
 	OwnerID     uint      `json:"owner_id"`
