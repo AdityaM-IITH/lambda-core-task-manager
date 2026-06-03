@@ -1,6 +1,6 @@
 # LambdaCore Todo
 
-A high performance task management application built with a React frontend and a Go backend (migrated from an original Python FastAPI implementation for improved performance and concurrency).
+A task management application built with a React frontend and a Go backend (migrated from an original Python FastAPI implementation).
 
 ## Architecture
 
